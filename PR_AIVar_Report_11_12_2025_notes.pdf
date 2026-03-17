@@ -1,0 +1,106 @@
+\documentclass[tikz,border=10pt]{standalone}
+\usepackage{amsmath}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning}
+\usetikzlibrary{calc}
+
+\begin{document}
+\begin{tikzpicture}[
+  node distance=1.8cm and 2cm,
+  >=Stealth,
+  every node/.style={font=\small},
+  io/.style={ellipse, draw=gray!80, fill=gray!10, thick,
+             minimum width=2.8cm, minimum height=1cm, align=center},
+  regime/.style={rectangle, draw=orange!80!black, fill=orange!10, thick,
+             rounded corners=4pt, text width=4.1cm, align=center, minimum height=1cm},
+  process/.style={rectangle, draw=blue!80!black, fill=blue!5, thick,
+             rounded corners=6pt, text width=5.2cm, align=center, minimum height=1.05cm},
+  evalproc/.style={rectangle, draw=purple!70!black, fill=purple!8, thick,
+             rounded corners=6pt, text width=5.2cm, align=center, minimum height=1.05cm},
+  decision/.style={diamond, draw=green!60!black, fill=green!10, thick,
+             aspect=2, align=center, inner xsep=1mm, inner ysep=1mm, text width=2.2cm},
+  arrow/.style={-Stealth, thick},
+  lab/.style={font=\scriptsize, inner sep=1pt}
+]
+
+% Main vertical training flow
+\node[io] (start) {Start Training};
+\node[regime, below left=1cm and 3.5cm of start] (selfsup)
+  {FixedMean / Resample\\Self-supervised Variational\\Training};
+\node[regime, below right=1cm and 3.5cm of start] (sup)
+  {Baseline\\Supervised Training};
+
+\node[process, below=2.4cm of start] (load)
+  {Load Batch\\{\scriptsize $(x_b,\, y_{\text{seq}},\, x_{\text{true}})$}};
+\node[process, below=1.8cm of load] (forward)
+  {Forward Pass\\{\scriptsize $x_a=f_\theta(x_b,\, y_{\text{seq}})$}};
+
+% Losses
+\node[process, right=4cm of forward] (varloss)
+  {Compute Variational Loss\\{\scriptsize
+  $L_{\text{DA}}=(x_a-x_b)^\top B^{-1}(x_a-x_b)$\\
+  $+(y_{\text{seq}}-Hx_a)^\top R^{-1}(y_{\text{seq}}-Hx_a)$}};
+\node[process, below=1.5cm of varloss] (suploss)
+  {Compute Supervised Loss\\{\scriptsize $L_{\text{sup}}=\lVert x_a-x_{\text{true}}\rVert^2$}};
+
+\node[process, below=2.0cm of suploss, xshift=-4cm] (backward)
+  {Backward Pass\\{\scriptsize Compute $\nabla_\theta L$}};
+\node[process, below=1.8cm of backward] (update)
+  {Update Parameters\\{\scriptsize $\theta \leftarrow \theta - \eta \nabla_\theta L$}};
+\node[decision, below=1.8cm of update] (epoch)
+  {Epoch\\Completed?};
+\node[process, below=1.8cm of epoch] (save)
+  {Save Model \& Metrics};
+\node[io, below=1.8cm of save] (endtrain)
+  {End Training};
+
+% Evaluation branch
+\node[io, right=5.2cm of save] (starteval) {Start Evaluation};
+\node[evalproc, below=1.8cm of starteval] (eload)
+  {Load Trained Model\\{\scriptsize $\theta$ \& Test Data $(x_b^{\text{test}}, y_{\text{seq}}^{\text{test}}, x_{\text{true}}^{\text{test}})$}};
+\node[evalproc, below=1.6cm of eload] (efwd)
+  {Forward Pass (Inference)\\{\scriptsize $x_a^{\text{test}} = f_\theta(x_b^{\text{test}}, y_{\text{seq}}^{\text{test}})$}};
+\node[evalproc, below=1.6cm of efwd] (emetrics)
+  {Compute Metrics\\{\scriptsize
+   RMSE$(x_a^{\text{test}},x_{\text{true}}^{\text{test}})$\\
+   MAE, Variational Terms, Obs Error}};
+\node[evalproc, below=1.6cm of emetrics] (eagg)
+  {Aggregate / Average\\Over Test Batches};
+\node[evalproc, below=1.6cm of eagg] (esave)
+  {Save Eval Metrics \&\\Generate Figures};
+\node[io, below=1.6cm of esave] (endeval)
+  {End Evaluation};
+
+% Connections training
+\draw[arrow] (start.south) -- (load.north);
+\draw[arrow] (selfsup.south) |- (load.west);
+\draw[arrow] (sup.south) |- (load.east);
+\draw[arrow] (load.south) -- (forward.north);
+
+\draw[arrow] (forward.east) --++(5mm,0) |- (varloss.west);
+\draw[arrow] (forward.east) --++(5mm,0) |- (suploss.west);
+
+\coordinate (bus) at ($(varloss.east)!0.5!(suploss.east)+(1.0,0)$);
+\draw[arrow] (varloss.east) -| (bus) |- (backward.east);
+\draw[arrow] (suploss.east) -| (bus) |- (backward.east);
+
+\draw[arrow] (backward.south) -- (update.north);
+\draw[arrow] (update.south) -- (epoch.north);
+\draw[arrow] (epoch.south) -- node[lab, right, text=green!60!black] {Yes} (save.north);
+\draw[arrow] (save.south) -- (endtrain.north);
+
+% Loopback
+\draw[arrow] (epoch.west) --++(-75mm,0) |- node[lab, left, text=red!70!black, pos=0.35]{No} (load.west);
+
+% Evaluation triggers (can start right after saving)
+\draw[arrow, dashed] (save.east) -- node[lab, above, text=purple!60!black] {Start Eval} (starteval.west);
+
+% Evaluation flow
+\draw[arrow] (starteval.south) -- (eload.north);
+\draw[arrow] (eload.south) -- (efwd.north);
+\draw[arrow] (efwd.south) -- (emetrics.north);
+\draw[arrow] (emetrics.south) -- (eagg.north);
+\draw[arrow] (eagg.south) -- (esave.north);
+\draw[arrow] (esave.south) -- (endeval.north);
+
+\end{tikzpicture}
+\end{document}

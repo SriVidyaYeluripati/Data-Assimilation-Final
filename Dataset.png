@@ -1,0 +1,72 @@
+@article{Lorenz1963,
+  author  = {Lorenz, Edward N.},
+  title   = {Deterministic nonperiodic flow},
+  journal = {Journal of the Atmospheric Sciences},
+  volume  = {20},
+  number  = {2},
+  pages   = {130--141},
+  year    = {1963}
+}
+
+@article{Kalman1960,
+  author  = {Kalman, R. E.},
+  title   = {A new approach to linear filtering and prediction problems},
+  journal = {Journal of Basic Engineering},
+  volume  = {82},
+  number  = {1},
+  pages   = {35--45},
+  year    = {1960}
+}
+
+@article{Evensen1994,
+  author  = {Evensen, Geir},
+  title   = {Sequential data assimilation with a nonlinear quasi-geostrophic model using Monte Carlo methods to forecast error statistics},
+  journal = {Journal of Geophysical Research: Oceans},
+  volume  = {99},
+  number  = {C5},
+  pages   = {10143--10162},
+  year    = {1994}
+}
+
+@article{Houtekamer1998,
+  author  = {Houtekamer, P. L. and Mitchell, H. L.},
+  title   = {Data assimilation using an ensemble Kalman filter technique},
+  journal = {Monthly Weather Review},
+  volume  = {126},
+  number  = {3},
+  pages   = {796--811},
+  year    = {1998}
+}
+
+@article{Fablet2021,
+  author  = {Fablet, Ronan and Ouala, Sixtine and Herzet, C{\'e}dric},
+  title   = {Learning variational data assimilation models and solvers},
+  journal = {Journal of Advances in Modeling Earth Systems},
+  volume  = {13},
+  number  = {3},
+  pages   = {e2020MS002256},
+  year    = {2021}
+}
+
+@article{Bocquet2023,
+  author  = {Bocquet, Marc and Farchi, Abel and Malartic, Quentin},
+  title   = {Neural incremental data assimilation},
+  journal = {arXiv preprint arXiv:2406.15076},
+  year    = {2023}
+}
+
+@inproceedings{Paszke2019,
+  author    = {Paszke, Adam and Gross, Sam and Massa, Francisco and Lerer, Adam and Bradbury, James and Chanan, Gregory and Killeen, Trevor and Lin, Zeming and Gimelshein, Natalia and Antiga, Luca and others},
+  title     = {{PyTorch}: An imperative style, high-performance deep learning library},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {32},
+  year      = {2019}
+}
+
+@inproceedings{He2016,
+  author    = {He, Kaiming and Zhang, Xiangyu and Ren, Shaoqing and Sun, Jian},
+  title     = {Deep residual learning for image recognition},
+  booktitle = {Proceedings of the IEEE conference on computer vision and pattern recognition},
+  pages     = {770--778},
+  year      = {2016}
+}
